@@ -1,0 +1,93 @@
+{
+	entryPoint : {
+		plugins: [
+			{
+				name:"mongodb",
+				class:"cj.studio.orm.mongodb.MongoDBPlugin",
+				parameters:{
+					remotes:"[
+					'120.27.15.205:27017'
+				]",
+					isTrustConnect: "false",
+					database: "admin",
+					user: 'superadmin',
+					password: '!jofers0408'
+				}
+			},
+			{
+				name:"mybatis",
+				class:"cj.studio.orm.mybatis.MyBatisPlugin",
+				parameters:{
+					classes:"[
+					]",
+					packages:"[
+					]"
+				}
+			}
+		],
+		activators: [
+			{
+				name: '开放口服务活动器',
+				class: 'cj.studio.openport.OpenportEntryPointActivator',
+				parameters: {
+					"publicAPIPath": '/portsapi',
+					checkAppSignStrategy: 'cj.netos.fission.program.AppSignStrategy',
+					checkAccessTokenStrategy: 'cj.netos.fission.program.CheckAccessTokenStrategy'
+				}
+			}
+		]
+	},
+	assemblyInfo : {
+		assemblyTitle : "fission.cashier",
+		assemblyResource:"site=/site;http.root=$(site)/web;http.jss=$(site)/jss/http;ws.jss=$(site)/jss/ws",
+		assemblyDescription : "裂变游戏·交个朋友·出纳柜台",
+		assemblyConfiguration : "",
+		assemblyCompany : "cj工作室出品，lns平台制造",
+		assemblyProduct : "cj.netos.fission",
+		assemblyCopyright : "Copyright   2011",
+		assemblyTrademark : "",
+		assemblyCulture : "",
+		guid : "591FC65F-6F67-480B-81BB-6DE8038C5489",
+		assemblyVersion : "1.0.0.0",
+		assemblyFileVersion : "1.0.0.0"
+	},
+	global:{
+		default:"zh_CN",
+		desc:"如果系统环境要求各芯片采用的语言本芯片没有，则芯片可采用默认语言"
+		},
+	serviceContainer : {
+		name : "netContainer",
+		switchFilter:"off",
+		monitors: "cj.netos.rabbitmq.DefaultRabbitMQMonitor,cj.studio.orm.redis.RedisServiceContainerMonitor",
+		jss:[{
+			module:"services1",
+			package:"cj.netos.fission.jss",
+			unzip:"true",
+			searchMode:"link",
+			extName:".jss.js"
+		}],
+		scans : [{
+			package : "cj.studio.orm.mybatis",
+			extName : ".class|.json|.xml",
+			exoterical:"true"
+		},{
+			package : "cj.netos.fission.program",
+			extName : ".class|.json|.xml",
+			exoterical:"true"
+		},{
+			package : "cj.netos.fission.service",
+			extName : ".class|.json|.xml",
+			exoterical:"true"
+		},{
+			package : "cj.netos.fission.ports",
+			extName : ".class|.json|.xml",
+			exoterical:"true"
+		},{
+			package : "cj.netos.fission.cmd",
+			extName : ".class|.json|.xml",
+			exoterical:"true"
+		}
+		]
+
+	}
+}

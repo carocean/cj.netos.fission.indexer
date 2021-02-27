@@ -1,0 +1,38 @@
+sourceSets { 
+	 main { 
+	 	java{
+	 		srcDir "$projectDir/src"
+	 	}
+	 	resources{
+		 	srcDir "$projectDir/site-src"
+		 }
+	 } 
+ 	}
+ 	sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+ 	tasks.withType(JavaCompile) {  
+        options.encoding = "UTF-8"  
+    } 
+ repositories { 
+ } 
+
+dependencies {
+    compile group: 'cj.netos.openport', name: 'cj.studio.openport', version: ref_cj_studio_openport_version
+}
+
+ task releaseToProgram(type: Copy) {
+ dependsOn "build"
+ from 'build/libs/'
+ into '../cj.netos.fission.program/src/cj/references'
+ include '**/*.jar'
+ exclude '**/*-javadoc.jar','**/*-sources.jar'
+ }
+ task releaseToOutputs(type: Copy) {
+ dependsOn "build"
+ from 'build/libs/'
+ into '../outputs'
+ include '**/*.jar'
+ }
+ task release(type:Copy){
+  dependsOn "releaseToProgram","releaseToOutputs"
+ }

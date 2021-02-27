@@ -1,0 +1,66 @@
+sourceSets {
+    main {
+        java {
+            srcDir "$projectDir/src"
+        }
+        resources {
+            srcDir "$projectDir/site-src"
+        }
+    }
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+repositories {
+}
+
+dependencies {
+    compile group: 'cj.netos.openport', name: 'cj.studio.openport', version: ref_cj_studio_openport_version
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.mybatis', version: ref_cj_studio_orm_mybatis
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.mongodb', version: ref_cj_studio_orm_mongodb
+    compile group: 'org.mongodb', name: 'mongodb-driver', version: '3.12.1'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.17'
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    compile group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.3.1'
+    implementation project(':cj.netos.fission.openports')
+    compile group: 'redis.clients', name: 'jedis', version: '3.1.0'
+    compile group: 'cj.studio.gateway2', name: 'cj.studio.orm.redis', version: ref_cj_studio_orm_redis
+    // https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '5.9.0'
+    compile group: 'cj.netos.rabbitmq', name: 'cj.netos.rabbitmq', version: ref_cj_netos_rabbitmq_version
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.25'
+
+}
+task copyRefembeds(type: Copy) {
+    from configurations.compileClasspath.files {
+        include 'cj.studio.orm.mybatis-*.jar','cj.studio.orm.mongodb-*.jar'
+    }
+    into 'src/cj/refembeds'
+}
+task copyReferences(type: Copy) {
+    from configurations.compileClasspath.files {
+        include 'cj.netos.fission.openports-*.jar',  'mybatis-*.jar', 'cj.studio.openport-*.jar','okhttp-*.jar','mysql-connector-java-8.0.17.jar',
+                'amqp-client-*.jar','cj.netos.rabbitmq-*.jar',
+                'snakeyaml-*.jar',
+                'cj.lns.chip.sos.cube-*.jar', 'mongodb-driver-*.jar','bson-*.jar',
+                'jedis-*.jar','cj.studio.orm.redis-*.jar'
+    }
+    into 'src/cj/references'
+}
+build.dependsOn('copyReferences')
+build.dependsOn('copyRefembeds')
+build.dependsOn(":cj.netos.fission.openports:release")
+
+task releaseToHost(dependsOn: copyReferences, type: Copy) {
+    dependsOn "build"
+    from 'build/libs/'
+    into '../cmdtools/gateway/assemblies/fission'
+    include '**/*.jar'
+    exclude '**/*-javadoc.jar', '**/*-sources.jar'
+}
+
+task release(type: Copy) {
+    dependsOn "releaseToHost"
+}

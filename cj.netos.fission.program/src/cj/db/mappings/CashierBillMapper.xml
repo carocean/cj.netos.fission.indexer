@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cj.netos.fission.mapper.CashierBillMapper">
+  <resultMap id="BaseResultMap" type="cj.netos.fission.model.CashierBill">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    <id column="sn" jdbcType="VARCHAR" property="sn" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="person" jdbcType="VARCHAR" property="person" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="amount" jdbcType="BIGINT" property="amount" />
+    <result column="balance" jdbcType="BIGINT" property="balance" />
+    <result column="order" jdbcType="INTEGER" property="order" />
+    <result column="refsn" jdbcType="VARCHAR" property="refsn" />
+    <result column="ctime" jdbcType="VARCHAR" property="ctime" />
+    <result column="workday" jdbcType="VARCHAR" property="workday" />
+    <result column="day" jdbcType="INTEGER" property="day" />
+    <result column="month" jdbcType="INTEGER" property="month" />
+    <result column="season" jdbcType="INTEGER" property="season" />
+    <result column="year" jdbcType="INTEGER" property="year" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    sn, title, person, nick_name, amount, balance, `order`, refsn, ctime, workday, `day`, 
+    `month`, season, `year`, note
+  </sql>
+  <select id="selectByExample" parameterType="cj.netos.fission.model.CashierBillExample" resultMap="BaseResultMap">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    select 
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    where sn = #{sn,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    delete from cashier_bill
+    where sn = #{sn,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="cj.netos.fission.model.CashierBillExample">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    delete from cashier_bill
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="cj.netos.fission.model.CashierBill">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    insert into cashier_bill (sn, title, person, 
+      nick_name, amount, balance, 
+      `order`, refsn, ctime, 
+      workday, `day`, `month`, 
+      season, `year`, note)
+    values (#{sn,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{person,jdbcType=VARCHAR}, 
+      #{nickName,jdbcType=VARCHAR}, #{amount,jdbcType=BIGINT}, #{balance,jdbcType=BIGINT}, 
+      #{order,jdbcType=INTEGER}, #{refsn,jdbcType=VARCHAR}, #{ctime,jdbcType=VARCHAR}, 
+      #{workday,jdbcType=VARCHAR}, #{day,jdbcType=INTEGER}, #{month,jdbcType=INTEGER}, 
+      #{season,jdbcType=INTEGER}, #{year,jdbcType=INTEGER}, #{note,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cj.netos.fission.model.CashierBill">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    insert into cashier_bill
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sn != null">
+        sn,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="person != null">
+        person,
+      </if>
+      <if test="nickName != null">
+        nick_name,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="balance != null">
+        balance,
+      </if>
+      <if test="order != null">
+        `order`,
+      </if>
+      <if test="refsn != null">
+        refsn,
+      </if>
+      <if test="ctime != null">
+        ctime,
+      </if>
+      <if test="workday != null">
+        workday,
+      </if>
+      <if test="day != null">
+        `day`,
+      </if>
+      <if test="month != null">
+        `month`,
+      </if>
+      <if test="season != null">
+        season,
+      </if>
+      <if test="year != null">
+        `year`,
+      </if>
+      <if test="note != null">
+        note,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sn != null">
+        #{sn,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="person != null">
+        #{person,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="balance != null">
+        #{balance,jdbcType=BIGINT},
+      </if>
+      <if test="order != null">
+        #{order,jdbcType=INTEGER},
+      </if>
+      <if test="refsn != null">
+        #{refsn,jdbcType=VARCHAR},
+      </if>
+      <if test="ctime != null">
+        #{ctime,jdbcType=VARCHAR},
+      </if>
+      <if test="workday != null">
+        #{workday,jdbcType=VARCHAR},
+      </if>
+      <if test="day != null">
+        #{day,jdbcType=INTEGER},
+      </if>
+      <if test="month != null">
+        #{month,jdbcType=INTEGER},
+      </if>
+      <if test="season != null">
+        #{season,jdbcType=INTEGER},
+      </if>
+      <if test="year != null">
+        #{year,jdbcType=INTEGER},
+      </if>
+      <if test="note != null">
+        #{note,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="cj.netos.fission.model.CashierBillExample" resultType="java.lang.Long">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    select count(*) from cashier_bill
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    update cashier_bill
+    <set>
+      <if test="record.sn != null">
+        sn = #{record.sn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.title != null">
+        title = #{record.title,jdbcType=VARCHAR},
+      </if>
+      <if test="record.person != null">
+        person = #{record.person,jdbcType=VARCHAR},
+      </if>
+      <if test="record.nickName != null">
+        nick_name = #{record.nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.amount != null">
+        amount = #{record.amount,jdbcType=BIGINT},
+      </if>
+      <if test="record.balance != null">
+        balance = #{record.balance,jdbcType=BIGINT},
+      </if>
+      <if test="record.order != null">
+        `order` = #{record.order,jdbcType=INTEGER},
+      </if>
+      <if test="record.refsn != null">
+        refsn = #{record.refsn,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ctime != null">
+        ctime = #{record.ctime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.workday != null">
+        workday = #{record.workday,jdbcType=VARCHAR},
+      </if>
+      <if test="record.day != null">
+        `day` = #{record.day,jdbcType=INTEGER},
+      </if>
+      <if test="record.month != null">
+        `month` = #{record.month,jdbcType=INTEGER},
+      </if>
+      <if test="record.season != null">
+        season = #{record.season,jdbcType=INTEGER},
+      </if>
+      <if test="record.year != null">
+        `year` = #{record.year,jdbcType=INTEGER},
+      </if>
+      <if test="record.note != null">
+        note = #{record.note,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    update cashier_bill
+    set sn = #{record.sn,jdbcType=VARCHAR},
+      title = #{record.title,jdbcType=VARCHAR},
+      person = #{record.person,jdbcType=VARCHAR},
+      nick_name = #{record.nickName,jdbcType=VARCHAR},
+      amount = #{record.amount,jdbcType=BIGINT},
+      balance = #{record.balance,jdbcType=BIGINT},
+      `order` = #{record.order,jdbcType=INTEGER},
+      refsn = #{record.refsn,jdbcType=VARCHAR},
+      ctime = #{record.ctime,jdbcType=VARCHAR},
+      workday = #{record.workday,jdbcType=VARCHAR},
+      `day` = #{record.day,jdbcType=INTEGER},
+      `month` = #{record.month,jdbcType=INTEGER},
+      season = #{record.season,jdbcType=INTEGER},
+      `year` = #{record.year,jdbcType=INTEGER},
+      note = #{record.note,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="cj.netos.fission.model.CashierBill">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    update cashier_bill
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="person != null">
+        person = #{person,jdbcType=VARCHAR},
+      </if>
+      <if test="nickName != null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=BIGINT},
+      </if>
+      <if test="balance != null">
+        balance = #{balance,jdbcType=BIGINT},
+      </if>
+      <if test="order != null">
+        `order` = #{order,jdbcType=INTEGER},
+      </if>
+      <if test="refsn != null">
+        refsn = #{refsn,jdbcType=VARCHAR},
+      </if>
+      <if test="ctime != null">
+        ctime = #{ctime,jdbcType=VARCHAR},
+      </if>
+      <if test="workday != null">
+        workday = #{workday,jdbcType=VARCHAR},
+      </if>
+      <if test="day != null">
+        `day` = #{day,jdbcType=INTEGER},
+      </if>
+      <if test="month != null">
+        `month` = #{month,jdbcType=INTEGER},
+      </if>
+      <if test="season != null">
+        season = #{season,jdbcType=INTEGER},
+      </if>
+      <if test="year != null">
+        `year` = #{year,jdbcType=INTEGER},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where sn = #{sn,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cj.netos.fission.model.CashierBill">
+    <!-- @mbg.generated: generated automatically, do not modify! -->
+    update cashier_bill
+    set title = #{title,jdbcType=VARCHAR},
+      person = #{person,jdbcType=VARCHAR},
+      nick_name = #{nickName,jdbcType=VARCHAR},
+      amount = #{amount,jdbcType=BIGINT},
+      balance = #{balance,jdbcType=BIGINT},
+      `order` = #{order,jdbcType=INTEGER},
+      refsn = #{refsn,jdbcType=VARCHAR},
+      ctime = #{ctime,jdbcType=VARCHAR},
+      workday = #{workday,jdbcType=VARCHAR},
+      `day` = #{day,jdbcType=INTEGER},
+      `month` = #{month,jdbcType=INTEGER},
+      season = #{season,jdbcType=INTEGER},
+      `year` = #{year,jdbcType=INTEGER},
+      note = #{note,jdbcType=VARCHAR}
+    where sn = #{sn,jdbcType=VARCHAR}
+  </update>
+  <select id="totalCacAverageByDay" parameterType="cj.netos.fission.model.CashierBill" resultType="java.lang.Long">
+    select
+    IFNULL(sum(amount),0)/IFNULL(count(*),1)
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = 2
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+    `day` = #{day,jdbcType=INTEGER}
+  </select>
+  <select id="totalCacAverageByMonth" parameterType="cj.netos.fission.model.CashierBill" resultType="java.lang.Long">
+    select
+    IFNULL(sum(amount),0)/IFNULL(count(*),1)
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = 2
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+  </select>
+  <select id="totalBillOfDayByOrder" parameterType="cj.netos.fission.model.CashierBill" resultType="java.lang.Long">
+    select
+   IFNULL(sum(amount),0)
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = #{order,jdbcType=INTEGER}
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+    and `day` = #{day,jdbcType=INTEGER}
+  </select>
+  <select id="totalBillOfMonthByOrder" parameterType="cj.netos.fission.model.CashierBill" resultType="java.lang.Long">
+    select
+    IFNULL(sum(amount),0)
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = #{order,jdbcType=INTEGER}
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+  </select>
+  <select id="pageBillOfDay" parameterType="cj.netos.fission.model.CashierBill" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = #{order,jdbcType=INTEGER}
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+    and `day` = #{day,jdbcType=INTEGER}
+    order by ctime desc
+    limit #{offset},#{limit}
+  </select>
+  <select id="pageBillOfMonth" parameterType="cj.netos.fission.model.CashierBill" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = #{order,jdbcType=INTEGER}
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+    order by ctime desc
+    limit #{offset},#{limit}
+  </select>
+  <select id="getBillOfMonth" parameterType="cj.netos.fission.model.CashierBill" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `year` = #{year,jdbcType=INTEGER}
+    and `month` = #{month,jdbcType=INTEGER}
+    order by ctime desc
+    limit #{offset},#{limit}
+  </select>
+  <select id="pageBillByOrder" parameterType="cj.netos.fission.model.CashierBill" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    and `order` = #{order,jdbcType=INTEGER}
+    order by ctime desc
+    limit #{offset},#{limit}
+  </select>
+  <select id="pageBill" parameterType="cj.netos.fission.model.CashierBill" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from cashier_bill
+    where person = #{person,jdbcType=VARCHAR}
+    order by ctime desc
+    limit #{offset},#{limit}
+  </select>
+</mapper>
