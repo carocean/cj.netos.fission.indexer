@@ -25,4 +25,6 @@ public interface ITagService {
 
     void selectPropTag(String unionid, String tagId);
 
+    Tag getTag(String tagId);
+
 }

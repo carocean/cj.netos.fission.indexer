@@ -38,6 +38,66 @@ public class PersonInfoService implements IPersonInfoService, IndexPoolConstants
     ICashierService cashierService;
     @CjServiceSite
     IServiceSite site;
+    private Map<String, Object> gisCodes;
+    Map<String, Object> gisReCodes;
+
+    @Override
+    public Map<String, Object> getGisReCodes() throws CircuitException {
+        if (gisReCodes != null) {
+            return gisReCodes;
+        }
+        indexGis();
+        return gisReCodes;
+    }
+
+    @Override
+    public Map<String, Object> getGisCodes() throws CircuitException {
+        if (gisCodes != null) {
+            return gisCodes;
+        }
+        indexGis();
+        return gisCodes;
+    }
+
+    private void indexGis() throws CircuitException {
+        String home = site.getProperty("home.dir");
+        String jsonFile = String.format("%s%sareas/data.json", home, File.separator);
+        String data = null;
+        try {
+            data = readFileContent(jsonFile);
+        } catch (IOException e) {
+            throw new CircuitException("500", e);
+        }
+        Map<String, Object> map = new Gson().fromJson(data, HashMap.class);
+        gisCodes = map;
+        gisReCodes = new HashMap<>();
+        Map<String, Object> provinces = (Map<String, Object>) map.get("0");
+        for (Map.Entry<String, Object> provinceEntry : provinces.entrySet()) {
+            String provinceCode = provinceEntry.getKey();
+            String provinceName = (String) provinceEntry.getValue();
+            gisReCodes.put(String.format("%s", provinceName), provinceCode);
+            Object o = map.get(String.format("0,%s", provinceCode));
+            if (o instanceof List) {
+                continue;
+            }
+            Map<String, Object> cities = (Map<String, Object>) o;
+            for (Map.Entry<String, Object> cityEntry : cities.entrySet()) {
+                String cityCode = cityEntry.getKey();
+                String cityName = (String) cityEntry.getValue();
+                gisReCodes.put(String.format("%s,%s", provinceName, cityName), cityCode);
+                o = map.get(String.format("0,%s,%s", provinceCode, cityCode));
+                if (o instanceof List) {
+                    continue;
+                }
+                Map<String, Object> districts = (Map<String, Object>) o;
+                for (Map.Entry<String, Object> districtEntry : districts.entrySet()) {
+                    String districtCode = districtEntry.getKey();
+                    String districtName = (String) districtEntry.getValue();
+                    gisReCodes.put(String.format("%s,%s,%s", provinceName, cityName, districtName), districtCode);
+                }
+            }
+        }
+    }
 
     @Override
     public void createGeoIndex() {
@@ -62,6 +122,15 @@ public class PersonInfoService implements IPersonInfoService, IndexPoolConstants
             offset += persons.size();
         }
         CJSystem.logging().info(getClass(), "完成构建索引");
+    }
+
+    @Override
+    public PersonInfo load(String person) {
+        Person p = personService.getPerson(person);
+        if (p == null) {
+            return null;
+        }
+        return loadPersonInfo(p);
     }
 
     @Override
@@ -118,7 +187,8 @@ public class PersonInfoService implements IPersonInfoService, IndexPoolConstants
         return info;
     }
 
-    private void indexPerson(PersonInfo info) {
+    @Override
+    public void indexPerson(PersonInfo info) {
         Person person = info.getPerson();
         List<Tag> propTags = info.getPropTags();
         List<Tag> payerTags = info.getPayerTags();
@@ -210,7 +280,7 @@ public class PersonInfoService implements IPersonInfoService, IndexPoolConstants
     }
 
     private void indexAreaDistrict(String areaCode, String person, long balance) {//注意district格式是：省·市·区县
-        jedisCluster.zadd(String.format("%s.%s", _KEY_POOL_AREA_PROVINCE, areaCode), balance, person);
+        jedisCluster.zadd(String.format("%s.%s", _KEY_POOL_AREA_DISTRICT, areaCode), balance, person);
     }
 
     private void indexAreaCity(String areaCode, String person, long balance) {//注意city格式是：省·市
@@ -218,7 +288,72 @@ public class PersonInfoService implements IPersonInfoService, IndexPoolConstants
     }
 
     private void indexAreaProvince(String areaCode, String person, long balance) {
-        jedisCluster.zadd(String.format("%s.%s", _KEY_POOL_AREA_DISTRICT, areaCode), balance, person);
+        jedisCluster.zadd(String.format("%s.%s", _KEY_POOL_AREA_PROVINCE, areaCode), balance, person);
+    }
+
+    @Override
+    public void emptyPersonIndex(PersonInfo info) {
+        Person person = info.getPerson();
+        List<Tag> propTags = info.getPropTags();
+        List<Tag> payerTags = info.getPayerTags();
+        Area payerArea = info.getPayerArea();
+        long balance = info.getBalance();
+        if (payerArea != null) {//有限定地区则放入区域池
+            switch (payerArea.getAreaType()) {
+                case "province":
+                    if (!StringUtil.isEmpty(payerArea.getAreaCode())) {
+                        CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s 索引在限定省：%s", person.getNickName(), payerArea.getAreaTitle()));
+                        jedisCluster.zrem(String.format("%s.%s", _KEY_POOL_AREA_PROVINCE, payerArea.getAreaCode()), person.getId());
+                    }
+                    break;
+                case "city":
+                    if (!StringUtil.isEmpty(payerArea.getAreaCode())) {
+                        CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s 索引在限定市：%s", person.getNickName(), payerArea.getAreaTitle()));
+                        jedisCluster.zrem(String.format("%s.%s", _KEY_POOL_AREA_CITY, payerArea.getAreaCode()), person.getId());
+                    }
+                    break;
+                case "district":
+                    if (!StringUtil.isEmpty(payerArea.getAreaCode())) {
+                        CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s 索引在限定区县：%s", person.getNickName(), payerArea.getAreaTitle()));
+                        jedisCluster.zrem(String.format("%s.%s", _KEY_POOL_AREA_DISTRICT, payerArea.getAreaCode()), person.getId());
+                    }
+                    break;
+            }
+        } else {//没有限定区域则按用户位置所属区域放入区域池
+            if (!StringUtil.isEmpty(person.getProvinceCode())) {
+                CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s在省：%s", person.getNickName(), person.getProvince()));
+                jedisCluster.zrem(String.format("%s.%s", _KEY_POOL_AREA_PROVINCE, person.getProvinceCode()), person.getId());
+                if (!StringUtil.isEmpty(person.getCityCode())) {
+                    CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s在市：%s", person.getNickName(), String.format("%s·%s",person.getProvince(),person.getCity())));
+                    String cityFull = String.format("%s·%s", person.getProvinceCode(), person.getCityCode());
+                    jedisCluster.zrem(cityFull, person.getId());
+                    if (!StringUtil.isEmpty(person.getDistrictCode())) {
+                        CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s在区县：%s", person.getNickName(), String.format("%s·%s·%s",person.getProvince(),person.getCity(),person.getDistrict())));
+                        String districtFull = String.format("%s·%s·%s", person.getProvinceCode(), person.getCityCode(), person.getDistrictCode());
+                        jedisCluster.zrem(districtFull, person.getId());
+                    }
+                }
+            }
+        }
+        if (!payerTags.isEmpty()) {//有限定标签则放入标签池
+            for (Tag tag : payerTags) {
+                CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s 索引在限定标签：%s", person.getId(), tag.getName()));
+                jedisCluster.zrem(String.format("%s.%s", _KEY_POOL_TAG, tag.getId()), person.getId());
+            }
+        }
+
+        if (!propTags.isEmpty() && (payerArea == null && payerTags.isEmpty())) {//没有限定标签和限定的拉新条件且有属性标签则放入标签池
+            for (Tag tag : propTags) {
+                CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s 索引在标签：%s", person.getId(), tag.getName()));
+                jedisCluster.zrem(String.format("%s.%s", _KEY_POOL_TAG, tag.getId()), person.getId());
+            }
+        }
+
+        if (payerArea != null || !payerTags.isEmpty()) {//不论是否具有区域条件限定，或是具有拉新条件限定，只是有条件了，则不放常规池，此处反回
+            return;
+        }
+        CJSystem.logging().info(getClass(), String.format("\t\t\t\t清除用户：%s索引在常规：是", person.getNickName()));
+        jedisCluster.zrem(_KEY_POOL_NORMAL, person.getId());
     }
 
     @Override
@@ -232,15 +367,7 @@ public class PersonInfoService implements IPersonInfoService, IndexPoolConstants
             jedisCluster.del(String.format("%s.%s", _KEY_POOL_TAG, tag.getId()));
         }
         //清除省、市、区县
-        String home = site.getProperty("home.dir");
-        String jsonFile = String.format("%s%sareas/data.json", home, File.separator);
-        String data = null;
-        try {
-            data = readFileContent(jsonFile);
-        } catch (IOException e) {
-            throw new CircuitException("500", e);
-        }
-        Map<String, Object> map = new Gson().fromJson(data, HashMap.class);
+        Map<String, Object> map = getGisCodes();
         Map<String, Object> provinces = (Map<String, Object>) map.get("0");
         for (Map.Entry<String, Object> entryProvince : provinces.entrySet()) {
             String provinceCode = entryProvince.getKey();

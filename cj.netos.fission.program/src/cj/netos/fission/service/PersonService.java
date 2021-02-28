@@ -51,4 +51,36 @@ public class PersonService extends AbstractService implements IPersonService {
         }
         return persons;
     }
+
+    @Override
+    public Person getPerson(String person) {
+        String cjql = String.format("select {'tuple':'*'} from tuple %s %s where {'tuple.id':'%s'}", _KEY_COL, Person.class.getName(), person);
+        IQuery<Person> query = getHome().createQuery(cjql);
+        IDocument<Person> document = query.getSingleResult();
+        if (document == null) {
+            return null;
+        }
+        return document.tuple();
+    }
+
+    @Override
+    public void updateProvince(String id, String province, String provinceCode) {
+        String filter = String.format("{'tuple.id':'%s'}",id);
+        String update = String.format("{'$set':{'tuple.province':'%s','tuple.provinceCode':'%s'}}",province,provinceCode);
+        getHome().updateDocOne(_KEY_COL, Document.parse(filter), Document.parse(update));
+    }
+
+    @Override
+    public void updateCity(String id, String city, String cityCode) {
+        String filter = String.format("{'tuple.id':'%s'}",id);
+        String update = String.format("{'$set':{'tuple.city':'%s','tuple.cityCode':'%s'}}",city,cityCode);
+        getHome().updateDocOne(_KEY_COL, Document.parse(filter), Document.parse(update));
+    }
+
+    @Override
+    public void updateDistrict(String id, String district, String districtCode) {
+        String filter = String.format("{'tuple.id':'%s'}",id);
+        String update = String.format("{'$set':{'tuple.district':'%s','tuple.districtCode':'%s'}}",district,districtCode);
+        getHome().updateDocOne(_KEY_COL, Document.parse(filter), Document.parse(update));
+    }
 }

@@ -4,8 +4,14 @@ import cj.netos.fission.model.Person;
 import cj.netos.fission.model.PersonInfo;
 import cj.studio.ecm.net.CircuitException;
 
+import java.util.Map;
+
 public interface IPersonInfoService {
 
+
+    Map<String, Object> getGisReCodes() throws CircuitException;
+
+    Map<String, Object> getGisCodes() throws CircuitException;
 
     void createGeoIndex();
 
@@ -13,6 +19,12 @@ public interface IPersonInfoService {
 
     PersonInfo loadPersonInfo(Person person);
 
+    void indexPerson(PersonInfo info);
+
     void emptyIndexAll() throws CircuitException;
+
+    PersonInfo load(String person);
+
+    void emptyPersonIndex(PersonInfo info);
 
 }

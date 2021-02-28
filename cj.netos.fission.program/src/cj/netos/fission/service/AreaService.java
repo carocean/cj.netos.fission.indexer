@@ -16,6 +16,7 @@ import java.util.List;
 public class AreaService extends AbstractService implements IAreaService {
     @CjServiceRef
     IPersonService personService;
+
     @Override
     public List<Area> listLimitArea(String unionid) {
         String cjql = String.format("select {'tuple':'*'} from tuple %s %s where {'tuple.person':'%s'}", _KEY_COL_LIMIT_AREA, Area.class.getName(), unionid);
@@ -28,6 +29,14 @@ public class AreaService extends AbstractService implements IAreaService {
         return areas;
     }
 
-
-
+    @Override
+    public Area getArea(String person, String direct) {
+        String cjql = String.format("select {'tuple':'*'} from tuple %s %s where {'tuple.person':'%s','tuple.direct':'%s'}", _KEY_COL_LIMIT_AREA, Area.class.getName(), person, direct);
+        IQuery<Area> query = getHome().createQuery(cjql);
+        IDocument<Area> document = query.getSingleResult();
+        if (document == null) {
+            return null;
+        }
+        return document.tuple();
+    }
 }

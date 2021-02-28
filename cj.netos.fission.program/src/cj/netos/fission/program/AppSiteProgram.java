@@ -1,6 +1,7 @@
 package cj.netos.fission.program;
 
 import cj.netos.fission.IIndexEngine;
+import cj.netos.fission.IUpdaterManager;
 import cj.studio.ecm.annotation.CjService;
 import cj.studio.ecm.net.CircuitException;
 import cj.studio.gateway.socket.Destination;
@@ -14,6 +15,8 @@ public class AppSiteProgram extends GatewayAppSiteProgram {
     protected void onstart(Destination dest, String assembliesHome, ProgramAdapterType type) throws CircuitException {
         IIndexEngine engine = (IIndexEngine) site.getService("indexEngine");
         engine.reindex();
+        IUpdaterManager updaterManager= (IUpdaterManager) site.getService("updaterManager");
+        updaterManager.start();
     }
 
 }

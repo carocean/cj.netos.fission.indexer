@@ -34,13 +34,24 @@ public class TagService extends AbstractService implements ITagService {
 
     @Override
     public void selectPropTag(String unionid, String tagId) {
-        if(getHome().tupleCount(_KEY_COL_PROP_TAGS,String.format("{'tuple.person':'%s','tuple.tag':'%s'}", unionid, tagId))>0){
+        if (getHome().tupleCount(_KEY_COL_PROP_TAGS, String.format("{'tuple.person':'%s','tuple.tag':'%s'}", unionid, tagId)) > 0) {
             return;
         }
         PropertyTag propertyTag = new PropertyTag();
         propertyTag.setPerson(unionid);
         propertyTag.setTag(tagId);
         getHome().saveDoc(_KEY_COL_PROP_TAGS, new TupleDocument<>(propertyTag));
+    }
+
+    @Override
+    public Tag getTag(String tagId) {
+        String cjql = String.format("select {'tuple':'*'} from tuple %s %s where {'tuple.id':'%s'}", _KEY_COL_TAGS, Tag.class.getName(), tagId);
+        IQuery<Tag> query = getHome().createQuery(cjql);
+        IDocument<Tag> document = query.getSingleResult();
+        if (document == null) {
+            return null;
+        }
+        return document.tuple();
     }
 
     @Override
