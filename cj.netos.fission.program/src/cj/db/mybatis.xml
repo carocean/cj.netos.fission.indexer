@@ -16,7 +16,7 @@
                 <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
                 <!-- 172.31.210.92,120.27.15.205 -->
                 <property name="url"
-                          value="jdbc:mysql://120.27.15.205:3306/fission.mf?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;autoReconnect=true&amp;rewriteBatchedStatements=true"/>
+                          value="jdbc:mysql://172.31.210.92:3306/fission.mf?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false&amp;autoReconnect=true&amp;rewriteBatchedStatements=true"/>
                 <property name="username" value="cj"/>
                 <property name="password" value="cj123456"/>
                 <!-- 如果数据源的defaultAutoCommit设置为True了，那么方法中如果自己捕获了异常，事务是不会回滚的，如果没有自己捕获异常则事务会回滚  -->
