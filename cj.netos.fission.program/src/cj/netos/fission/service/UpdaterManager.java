@@ -88,6 +88,7 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
             List<UpdateEvent> events = pageEvent(limit, offset);
             if (events.isEmpty()) {
                 try {
+                    offset=0;
                     CJSystem.logging().info(getClass(), String.format("\t完成一轮"));
                     Thread.sleep(sleepLong);
                     continue;
