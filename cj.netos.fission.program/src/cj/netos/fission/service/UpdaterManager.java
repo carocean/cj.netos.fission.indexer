@@ -339,16 +339,17 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
 
     private void onUpdateBalance(UpdateEvent event) {
         //如果小于临界值，则从各索引库中移除
-        Map<String, Object> data = event.getData();
-        long balance = Double.valueOf(data.get("balance")+"").longValue();
-        String openedAmount = site.getProperty("recommender.user.opened.amount");
-        if (StringUtil.isEmpty(openedAmount)) {
-            openedAmount = "60";
-        }
-        if (balance < Long.valueOf(openedAmount)) {
+        //由于各索引集合需要按balance进行排序，所以每次余额更新都要重建用户在各个集合中的索引
+//        Map<String, Object> data = event.getData();
+//        long balance = Double.valueOf(data.get("balance")+"").longValue();
+//        String openedAmount = site.getProperty("recommender.user.opened.amount");
+//        if (StringUtil.isEmpty(openedAmount)) {
+//            openedAmount = "60";
+//        }
+//        if (balance < Long.valueOf(openedAmount)) {
             emptyPersonIndex(event.getPerson());
             reindexPerson(event.getPerson());
-        }
+//        }
     }
 
     private void reindexPerson(String person) {
