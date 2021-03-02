@@ -29,6 +29,12 @@ public class CashierBalanceService implements ICashierBalanceService {
     @CjTransaction
     @Override
     public CashierBalance getBalance(String unionid) {
-        return cashierBalanceMapper.selectByPrimaryKey(unionid);
+        CashierBalance balance= cashierBalanceMapper.selectByPrimaryKey(unionid);
+        if (balance == null) {
+            balance=new  CashierBalance();
+            balance.setPerson(unionid);
+            balance.setBalance(0L);
+        }
+        return balance;
     }
 }

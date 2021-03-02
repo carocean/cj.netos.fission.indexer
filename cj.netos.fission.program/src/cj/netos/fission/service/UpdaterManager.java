@@ -88,7 +88,7 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
             List<UpdateEvent> events = pageEvent(limit, offset);
             if (events.isEmpty()) {
                 try {
-                    offset=0;
+                    offset = 0;
                     CJSystem.logging().info(getClass(), String.format("\t完成一轮"));
                     Thread.sleep(sleepLong);
                     continue;
@@ -272,12 +272,24 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
         Map<String, Object> geoMap = (Map<String, Object>) recodes.get("regeocode");
         Map<String, Object> comp = (Map<String, Object>) geoMap.get("addressComponent");
         String province = (String) comp.get("province");
-        String city = (String) comp.get("city");
-        String district = (String) comp.get("district");
+        String city = null;
+        if (!(comp.get("city") instanceof List)) {
+            city = (String) comp.get("city");
+        }
+        String district = null;
+        if (!(comp.get("district") instanceof List)) {
+            district = (String) comp.get("district");
+        }
         Map<String, Object> gisCodes = personInfoService.getGisReCodes();
         String provinceCode = (String) gisCodes.get(province);
-        String cityCode = (String) gisCodes.get(String.format("%s,%s", province, city));
-        String districtCode = (String) gisCodes.get(String.format("%s,%s,%s", province, city, district));
+        String cityCode = null;
+        if (!StringUtil.isEmpty(city)) {
+            cityCode = (String) gisCodes.get(String.format("%s,%s", province, city));
+        }
+        String districtCode = null;
+        if (!StringUtil.isEmpty(city) && !StringUtil.isEmpty(district)) {
+            districtCode = (String) gisCodes.get(String.format("%s,%s,%s", province, city, district));
+        }
         if (!StringUtil.isEmpty(provinceCode) && !provinceCode.equals(person.getProvinceCode())) {
             personService.updateProvince(person.getId(), province, provinceCode);
 
@@ -323,6 +335,7 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
             CashierBalance balance = cashierBalanceService.getBalance(person.getId());
             jedisCluster.zadd(String.format("%s.%s", _KEY_POOL_AREA_DISTRICT, String.format("%s·%s·%s", provinceCode, cityCode, districtCode)), balance.getBalance(), event.getPerson());
         }
+        CJSystem.logging().info(getClass(), String.format("\t\t\t\t已更新用户：%s 位置", person.getNickName()));
     }
 
 
@@ -347,8 +360,8 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
 //            openedAmount = "60";
 //        }
 //        if (balance < Long.valueOf(openedAmount)) {
-            emptyPersonIndex(event.getPerson());
-            reindexPerson(event.getPerson());
+        emptyPersonIndex(event.getPerson());
+        reindexPerson(event.getPerson());
 //        }
     }
 
