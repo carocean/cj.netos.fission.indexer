@@ -271,7 +271,10 @@ public class UpdaterManager extends AbstractService implements IUpdaterManager, 
 //        System.out.println("高德返回：" + recodes);
         Map<String, Object> geoMap = (Map<String, Object>) recodes.get("regeocode");
         Map<String, Object> comp = (Map<String, Object>) geoMap.get("addressComponent");
-        String province = (String) comp.get("province");
+        String province = null;
+        if (!(comp.get("province") instanceof List)) {
+            province = (String) comp.get("province");
+        }
         String city = null;
         if (!(comp.get("city") instanceof List)) {
             city = (String) comp.get("city");
